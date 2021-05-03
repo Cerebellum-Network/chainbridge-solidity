@@ -48,17 +48,6 @@ contract ERC721Safe {
         erc721.transferFrom(owner, recipient, tokenID);
     }
 
-    /**
-        @notice Used to create new ERC721s.
-        @param tokenAddress Address of ERC721 to mint.
-        @param recipient Address to mint token to.
-        @param tokenID ID of token to mint.
-        @param data Optional data to send along with mint call.
-     */
-    function mintERC721(address tokenAddress, address recipient, uint256 tokenID, bytes memory data) internal {
-        ERC721MinterBurnerPauser erc721 = ERC721MinterBurnerPauser(tokenAddress);
-        erc721.mint(recipient, tokenID, string(data));
-    }
 
     /**
         @notice Used to burn ERC721s.

@@ -48,18 +48,6 @@ contract ERC20Safe {
     }
 
     /**
-        @notice Used to create new ERC20s.
-        @param tokenAddress Address of ERC20 to transfer.
-        @param recipient Address to mint token to.
-        @param amount Amount of token to mint.
-     */
-    function mintERC20(address tokenAddress, address recipient, uint256 amount) internal {
-        ERC20PresetMinterPauser erc20 = ERC20PresetMinterPauser(tokenAddress);
-        erc20.mint(recipient, amount);
-
-    }
-
-    /**
         @notice Used to burn ERC20s.
         @param tokenAddress Address of ERC20 to burn.
         @param owner Current owner of tokens.
