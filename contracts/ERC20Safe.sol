@@ -2,8 +2,6 @@ pragma solidity 0.6.4;
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/presets/ERC20PresetMinterPauser.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20Burnable.sol";
 
 /**
     @title Manages deposited ERC20s.
@@ -47,18 +45,6 @@ contract ERC20Safe {
         _safeTransfer(erc20, recipient, amount);
     }
 
-    /**
-        @notice Used to create new ERC20s.
-        @param tokenAddress Address of ERC20 to transfer.
-        @param recipient Address to mint token to.
-        @param amount Amount of token to mint.
-     */
-    function mintERC20(address tokenAddress, address recipient, uint256 amount) internal {
-        ERC20PresetMinterPauser erc20 = ERC20PresetMinterPauser(tokenAddress);
-        erc20.mint(recipient, amount);
-
-    }
-    
 
     /**
         @notice used to transfer ERC20s safely
@@ -87,7 +73,7 @@ contract ERC20Safe {
         @param token Token instance call targets
         @param data encoded call data
      */
-    function _safeCall(IERC20 token, bytes memory data) private {        
+    function _safeCall(IERC20 token, bytes memory data) private {
         (bool success, bytes memory returndata) = address(token).call(data);
         require(success, "ERC20: call failed");
 
