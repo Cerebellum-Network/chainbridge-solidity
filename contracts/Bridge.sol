@@ -4,6 +4,8 @@ pragma experimental ABIEncoderV2;
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "./utils/Pausable.sol";
 import "./utils/SafeMath.sol";
+import "./utils/SafeCast.sol";
+import "./utils/Whitelist.sol";
 import "./interfaces/IDepositExecute.sol";
 import "./interfaces/IBridge.sol";
 import "./interfaces/IERCHandler.sol";
@@ -13,7 +15,11 @@ import "./interfaces/IGenericHandler.sol";
     @title Facilitates deposits, creation and votiing of deposit proposals, and deposit executions.
     @author ChainSafe Systems.
  */
-contract Bridge is Pausable, AccessControl, SafeMath {
+contract Bridge is Pausable, AccessControl, SafeMath, Whitelist {
+    using SafeCast for *;
+
+    // Limit relayers number because proposal can fit only so much votes
+    uint256 constant public MAX_RELAYERS = 200;
 
     uint8   public _chainID;
     uint256 public _relayerThreshold;
