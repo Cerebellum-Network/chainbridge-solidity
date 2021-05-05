@@ -44,29 +44,29 @@ contract Whitelist is AccessControl {
     }
 
     function addToWhitelist(address addressToAdd) public onlyWhitelistOrAdmin {
-        require(!isOnWhitelist(addressToAdd), "Address to add is already on the whitelist");
+        require(!isWhitelisted(addressToAdd), "Address to add is already whitelisted");
         _whitelist.add(addressToAdd);
         emit WhitelistAddressAdded(addressToAdd);
     }
 
     function removeFromWhitelist(address addressToRemove) public onlyWhitelistOrAdmin {
-        require(isOnWhitelist(addressToRemove), "Address to remove is not on the whitelist");
+        require(isWhitelisted(addressToRemove), "Address to remove is not whitelisted");
         _whitelist.remove(addressToRemove);
         emit WhitelistAddressRemoved(addressToRemove);
     }
 
-    function isOnWhitelist(address addressToCheck) public view returns (bool) {
+    function isWhitelisted(address addressToCheck) public view returns (bool) {
         return _whitelist.contains(addressToCheck);
     }
 
     function _onlyWhitelistOrAdmin() private view {
         require(hasRole(WHITELISTER_ROLE, msg.sender)
             || hasRole(DEFAULT_ADMIN_ROLE, msg.sender),
-            "Sender doesn't have Whitelist or Admin role");
+            "Sender doesn't have Whitelister or Admin role");
     }
 
     function _usingWhitelist() private view {
-        if (isWhitelistEnabled() && !isOnWhitelist(msg.sender))
-            revert("Sender address is not on the whitelist");
+        if (isWhitelistEnabled() && !isWhitelisted(msg.sender))
+            revert("Sender address is not whitelisted");
     }
 }
