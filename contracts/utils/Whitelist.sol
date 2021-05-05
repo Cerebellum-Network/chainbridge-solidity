@@ -4,67 +4,132 @@ pragma solidity >=0.6.0 <0.8.0;
 
 import "./AccessControl.sol";
 
+/**
+    @title Whitelist
+    @dev Allows developers to implement whitelisting functionality
+    @dev Inherits methods and variables from AccessControl
+    @dev WHITELISTER_ROLE is used to grant permissions for whitelist control
+
+    Use `onlyWhitelisted` modifier for a method in order to restrict access
+    only for whitelisted addresses:
+
+    ```
+        contract MyContract is Whitelist {
+            function deposit() external onlyWhitelisted {
+                // allow execution only to addresses that are in the whitelist
+            }
+        }
+    ```
+
+    Addresses can be added and removed dynamically via the `addToWhitelist`
+    and `removeFromWhitelist` functions. You can check if an address is
+    whitelisted or not by calling `isWhitelisted` function.
+
+    The entire whitelist functionality can be enabled or disabled via the
+    `enableWhitelist` and `disableWhitelist` functions. You can check if the
+    feature is enabled by calling `isWhitelistEnabled` function.
+*/
+
 contract Whitelist is AccessControl {
+    // See @openzeppelin/contracts/utils/EnumerableSet.sol for more info
     using EnumerableSet for EnumerableSet.AddressSet;
 
+    /// @dev Emitted when whitelist feature is enabled
     event WhitelistEnabled(address senderAddress);
+    /// @dev Emitted when whitelist feature is disabled
     event WhitelistDisabled(address senderAddress);
+    /// @dev Emitted when an address is added to the whitelist
     event WhitelistAddressAdded(address addedAddress);
+    /// @dev Emitted when an address is removed from the whitelist
     event WhitelistAddressRemoved(address removedAddress);
 
+    /// @notice Whitelister role is used for whitelist administration
     bytes32 public constant WHITELISTER_ROLE = keccak256("WHITELISTER_ROLE");
 
     bool private _isWhitelistEnabled;
     EnumerableSet.AddressSet private _whitelist;
 
+    /// @dev Restricts access only for Whitelister and Admin
     modifier onlyWhitelisterOrAdmin() {
         _onlyWhitelisterOrAdmin();
         _;
     }
 
+    /// @dev Restricts access only for whitelisted addresses
     modifier onlyWhitelisted() {
         _onlyWhitelisted();
         _;
     }
 
+    /**
+        @notice Enables whitelist feature
+        @dev The caller must have Whitelister or Admin role
+        @dev Enables whitelist if disabled and emits `WhitelistEnabled` event
+     */
     function enableWhitelist() external onlyWhitelisterOrAdmin {
         require(!isWhitelistEnabled(), "Whitelist is already enabled");
         _isWhitelistEnabled = true;
         emit WhitelistEnabled(msg.sender);
     }
 
+    /**
+        @notice Disables whitelist feature
+        @dev The caller must have Whitelister or Admin role
+        @dev Disables whitelist if enabled and emits `WhitelistDisabled` event
+     */
     function disableWhitelist() external onlyWhitelisterOrAdmin {
         require(isWhitelistEnabled(), "Whitelist is already disabled");
         _isWhitelistEnabled = false;
         emit WhitelistDisabled(msg.sender);
     }
 
+    /**
+        @notice Returns true if whitelist feature is enabled
+     */
     function isWhitelistEnabled() public view returns (bool) {
         return _isWhitelistEnabled;
     }
 
+    /**
+        @notice Adds an address to the whitelist
+        @dev The caller must have Whitelister or Admin role
+        @dev Adds an address if not whitelisted and emits `WhitelistAddressAdded` event
+        @param addressToAdd Address that is added to the whitelist
+     */
     function addToWhitelist(address addressToAdd) public onlyWhitelisterOrAdmin {
         require(!isWhitelisted(addressToAdd), "Address to add is already whitelisted");
         _whitelist.add(addressToAdd);
         emit WhitelistAddressAdded(addressToAdd);
     }
 
+    /**
+        @notice Removes an address from the whitelist
+        @dev The caller must have Whitelister or Admin role
+        @dev Removes a whitelisted address and emits `WhitelistAddressAdded` event
+        @param addressToRemove Address that is removed from the whitelist
+     */
     function removeFromWhitelist(address addressToRemove) public onlyWhitelisterOrAdmin {
         require(isWhitelisted(addressToRemove), "Address to remove is not whitelisted");
         _whitelist.remove(addressToRemove);
         emit WhitelistAddressRemoved(addressToRemove);
     }
 
+    /**
+        @notice Returns true if address is whitelisted
+        @param addressToCheck Address to check
+     */
     function isWhitelisted(address addressToCheck) public view returns (bool) {
         return _whitelist.contains(addressToCheck);
     }
 
+    // Checks if method caller has Whitelister or Admin role
     function _onlyWhitelisterOrAdmin() private view {
         require(hasRole(WHITELISTER_ROLE, msg.sender)
             || hasRole(DEFAULT_ADMIN_ROLE, msg.sender),
             "Sender doesn't have Whitelister or Admin role");
     }
 
+    // Checks if method caller is whitelisted
     function _onlyWhitelisted() private view {
         if (isWhitelistEnabled() && !isWhitelisted(msg.sender))
             revert("Sender address is not whitelisted");
