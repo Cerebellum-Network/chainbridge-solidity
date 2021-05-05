@@ -42,7 +42,7 @@ contract TestWhitelist is Whitelist {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
-    function testWhitelist() external usingWhitelist {
+    function testWhitelist() external onlyWhitelisted {
         emit TestCalled();
     }
 }
