@@ -299,7 +299,7 @@ contract Bridge is Pausable, AccessControl, SafeMath, Whitelist {
         @param data Additional data to be passed to specified handler.
         @notice Emits {Deposit} event.
      */
-    function deposit(uint8 destinationChainID, bytes32 resourceID, bytes calldata data) external payable whenNotPaused usingWhitelist {
+    function deposit(uint8 destinationChainID, bytes32 resourceID, bytes calldata data) external payable whenNotPaused onlyWhitelisted {
         require(msg.value == _fee, "Incorrect fee supplied");
 
         address handler = _resourceIDToHandlerAddress[resourceID];
