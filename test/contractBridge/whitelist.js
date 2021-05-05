@@ -39,13 +39,13 @@ contract('Bridge - [whitelist]', async accounts => {
         assert.isFalse(await BridgeInstance.isWhitelistEnabled());
     });
 
-    it('should add/remove whitelisted account and emit events', async () => {
+    it('should add/remove whitelisted address and emit events', async () => {
         assert.isFalse(await BridgeInstance.isOnWhitelist(testAccount));
         const addTx = await BridgeInstance.addToWhitelist(testAccount);
-        TruffleAssert.eventEmitted(addTx, 'WhitelistAccountAdded');
+        TruffleAssert.eventEmitted(addTx, 'WhitelistAddressAdded');
         assert.isTrue(await BridgeInstance.isOnWhitelist(testAccount));
         const removeTx = await BridgeInstance.removeFromWhitelist(testAccount);
-        TruffleAssert.eventEmitted(removeTx, 'WhitelistAccountRemoved');
+        TruffleAssert.eventEmitted(removeTx, 'WhitelistAddressRemoved');
         assert.isFalse(await BridgeInstance.isOnWhitelist(testAccount));
     });
 
@@ -89,12 +89,12 @@ contract('Bridge - [whitelist]', async accounts => {
             "Whitelist is already enabled")
     });
 
-    it('should revert if whitelisted account already added/removed', async () => {
+    it('should revert if whitelisted address already added/removed', async () => {
         await TruffleAssert.reverts(BridgeInstance.removeFromWhitelist(testAccount),
-            "Account is not on the whitelist")
+            "Address to remove is not on the whitelist")
         await BridgeInstance.addToWhitelist(testAccount);
         await TruffleAssert.reverts(BridgeInstance.addToWhitelist(testAccount),
-            "Account is already on the whitelist")
+            "Address to add is already on the whitelist")
     });
 
     it('should apply whitelisting by adding custom modifier to a method', async () => {
@@ -107,11 +107,11 @@ contract('Bridge - [whitelist]', async accounts => {
         await TestInstance.enableWhitelist()
 
         await TruffleAssert.reverts(TestInstance.testWhitelist({from: adminAccount}),
-            "Sender is not on the whitelist")
+            "Sender address is not on the whitelist")
         await TruffleAssert.reverts(TestInstance.testWhitelist({from: genericAccount}),
-            "Sender is not on the whitelist")
+            "Sender address is not on the whitelist")
         await TruffleAssert.reverts(TestInstance.testWhitelist({from: testAccount}),
-            "Sender is not on the whitelist")
+            "Sender address is not on the whitelist")
 
         await TestInstance.addToWhitelist(adminAccount);
         await TruffleAssert.passes(await TestInstance.testWhitelist({from: adminAccount}))
@@ -122,13 +122,13 @@ contract('Bridge - [whitelist]', async accounts => {
 
         await TestInstance.removeFromWhitelist(adminAccount);
         await TruffleAssert.reverts(TestInstance.testWhitelist({from: adminAccount}),
-            "Sender is not on the whitelist")
+            "Sender address is not on the whitelist")
         await TestInstance.removeFromWhitelist(genericAccount);
         await TruffleAssert.reverts(TestInstance.testWhitelist({from: genericAccount}),
-            "Sender is not on the whitelist")
+            "Sender address is not on the whitelist")
         await TestInstance.removeFromWhitelist(testAccount);
         await TruffleAssert.reverts(TestInstance.testWhitelist({from: testAccount}),
-            "Sender is not on the whitelist")
+            "Sender address is not on the whitelist")
 
         await TestInstance.disableWhitelist()
 

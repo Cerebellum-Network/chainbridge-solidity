@@ -7,10 +7,10 @@ import "./AccessControl.sol";
 contract Whitelist is AccessControl {
     using EnumerableSet for EnumerableSet.AddressSet;
 
-    event WhitelistEnabled(address sender);
-    event WhitelistDisabled(address sender);
-    event WhitelistAccountAdded(address account);
-    event WhitelistAccountRemoved(address account);
+    event WhitelistEnabled(address senderAddress);
+    event WhitelistDisabled(address senderAddress);
+    event WhitelistAddressAdded(address addedAddress);
+    event WhitelistAddressRemoved(address removedAddress);
 
     bytes32 public constant WHITELISTER_ROLE = keccak256("WHITELISTER_ROLE");
 
@@ -43,20 +43,20 @@ contract Whitelist is AccessControl {
         return _isWhitelistEnabled;
     }
 
-    function addToWhitelist(address account) public onlyWhitelistOrAdmin {
-        require(!isOnWhitelist(account), "Account is already on the whitelist");
-        _whitelist.add(account);
-        emit WhitelistAccountAdded(account);
+    function addToWhitelist(address addressToAdd) public onlyWhitelistOrAdmin {
+        require(!isOnWhitelist(addressToAdd), "Address to add is already on the whitelist");
+        _whitelist.add(addressToAdd);
+        emit WhitelistAddressAdded(addressToAdd);
     }
 
-    function removeFromWhitelist(address account) public onlyWhitelistOrAdmin {
-        require(isOnWhitelist(account), "Account is not on the whitelist");
-        _whitelist.remove(account);
-        emit WhitelistAccountRemoved(account);
+    function removeFromWhitelist(address addressToRemove) public onlyWhitelistOrAdmin {
+        require(isOnWhitelist(addressToRemove), "Address to remove is not on the whitelist");
+        _whitelist.remove(addressToRemove);
+        emit WhitelistAddressRemoved(addressToRemove);
     }
 
-    function isOnWhitelist(address account) public view returns (bool) {
-        return _whitelist.contains(account);
+    function isOnWhitelist(address addressToCheck) public view returns (bool) {
+        return _whitelist.contains(addressToCheck);
     }
 
     function _onlyWhitelistOrAdmin() private view {
@@ -67,6 +67,6 @@ contract Whitelist is AccessControl {
 
     function _usingWhitelist() private view {
         if (isWhitelistEnabled() && !isOnWhitelist(msg.sender))
-            revert("Sender is not on the whitelist");
+            revert("Sender address is not on the whitelist");
     }
 }
