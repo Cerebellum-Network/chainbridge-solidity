@@ -114,6 +114,7 @@ contract Bridge is Pausable, AccessControl, SafeMath, Whitelist {
         _expiry = expiry.toUint40();
 
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        addToWhitelist(msg.sender);
 
         for (uint256 i; i < initialRelayers.length; i++) {
             grantRole(RELAYER_ROLE, initialRelayers[i]);
