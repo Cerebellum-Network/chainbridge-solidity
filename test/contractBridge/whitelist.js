@@ -19,12 +19,12 @@ contract('Bridge - [whitelist]', async accounts => {
 
     let BridgeInstance;
     let ADMIN_ROLE;
-    let WHITELIST_ROLE;
+    let WHITELISTER_ROLE;
 
     beforeEach(async () => {
         BridgeInstance = await BridgeContract.new(chainID, initialRelayers, initialRelayerThreshold, 0, 100);
         ADMIN_ROLE = await BridgeInstance.DEFAULT_ADMIN_ROLE()
-        WHITELIST_ROLE = await BridgeInstance.WHITELIST_ROLE()
+        WHITELISTER_ROLE = await BridgeInstance.WHITELISTER_ROLE()
     });
 
     // Testing whitelist methods
@@ -54,13 +54,13 @@ contract('Bridge - [whitelist]', async accounts => {
         await TruffleAssert.passes(BridgeInstance.enableWhitelist({from: adminAccount}))
         await TruffleAssert.passes(BridgeInstance.disableWhitelist({from: adminAccount}))
 
-        assert.isFalse(await BridgeInstance.hasRole(WHITELIST_ROLE, genericAccount));
+        assert.isFalse(await BridgeInstance.hasRole(WHITELISTER_ROLE, genericAccount));
         await TruffleAssert.reverts(BridgeInstance.enableWhitelist({from: genericAccount}),
             "Sender doesn't have Whitelist or Admin role")
         await TruffleAssert.reverts(BridgeInstance.disableWhitelist({from: genericAccount}),
             "Sender doesn't have Whitelist or Admin role")
 
-        await BridgeInstance.grantRole(WHITELIST_ROLE, genericAccount);
+        await BridgeInstance.grantRole(WHITELISTER_ROLE, genericAccount);
         await TruffleAssert.passes(BridgeInstance.enableWhitelist({from: genericAccount}))
         await TruffleAssert.passes(BridgeInstance.disableWhitelist({from: genericAccount}))
     });
@@ -70,13 +70,13 @@ contract('Bridge - [whitelist]', async accounts => {
         await TruffleAssert.passes(BridgeInstance.addToWhitelist(testAccount, {from: adminAccount}))
         await TruffleAssert.passes(BridgeInstance.removeFromWhitelist(testAccount, {from: adminAccount}))
 
-        assert.isFalse(await BridgeInstance.hasRole(WHITELIST_ROLE, genericAccount));
+        assert.isFalse(await BridgeInstance.hasRole(WHITELISTER_ROLE, genericAccount));
         await TruffleAssert.reverts(BridgeInstance.addToWhitelist(testAccount, {from: genericAccount}),
             "Sender doesn't have Whitelist or Admin role")
         await TruffleAssert.reverts(BridgeInstance.removeFromWhitelist(testAccount, {from: genericAccount}),
             "Sender doesn't have Whitelist or Admin role")
 
-        await BridgeInstance.grantRole(WHITELIST_ROLE, genericAccount);
+        await BridgeInstance.grantRole(WHITELISTER_ROLE, genericAccount);
         await TruffleAssert.passes(BridgeInstance.addToWhitelist(testAccount, {from: genericAccount}))
         await TruffleAssert.passes(BridgeInstance.removeFromWhitelist(testAccount, {from: genericAccount}))
     });
@@ -100,7 +100,7 @@ contract('Bridge - [whitelist]', async accounts => {
     it('should apply whitelisting by adding custom modifier to a method', async () => {
         const TestInstance = await TestWhitelistContract.new();
         await TruffleAssert.passes(await TestInstance.testWhitelist({from: adminAccount}))
-        await TestInstance.grantRole(WHITELIST_ROLE, genericAccount);
+        await TestInstance.grantRole(WHITELISTER_ROLE, genericAccount);
         await TruffleAssert.passes(await TestInstance.testWhitelist({from: genericAccount}))
         await TruffleAssert.passes(await TestInstance.testWhitelist({from: testAccount}))
 

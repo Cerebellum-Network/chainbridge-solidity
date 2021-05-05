@@ -12,7 +12,7 @@ contract Whitelist is AccessControl {
     event WhitelistAccountAdded(address account);
     event WhitelistAccountRemoved(address account);
 
-    bytes32 public constant WHITELIST_ROLE = keccak256("WHITELIST_ROLE");
+    bytes32 public constant WHITELISTER_ROLE = keccak256("WHITELISTER_ROLE");
 
     bool private _isWhitelistEnabled;
     EnumerableSet.AddressSet private _whitelist;
@@ -60,7 +60,7 @@ contract Whitelist is AccessControl {
     }
 
     function _onlyWhitelistOrAdmin() private view {
-        require(hasRole(WHITELIST_ROLE, msg.sender)
+        require(hasRole(WHITELISTER_ROLE, msg.sender)
             || hasRole(DEFAULT_ADMIN_ROLE, msg.sender),
             "Sender doesn't have Whitelist or Admin role");
     }
