@@ -120,6 +120,7 @@ contract Bridge is Pausable, AccessControl, SafeMath, Whitelist {
 
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setRoleAdmin(RELAYER_ROLE, DEFAULT_ADMIN_ROLE);
+        addToWhitelist(msg.sender);
 
         for (uint i; i < initialRelayers.length; i++) {
             grantRole(RELAYER_ROLE, initialRelayers[i]);

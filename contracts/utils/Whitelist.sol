@@ -39,20 +39,20 @@ contract Whitelist is AccessControl {
         emit WhitelistDisabled(msg.sender);
     }
 
-    function addToWhitelist(address account) external onlyWhitelistOrAdmin {
+    function isWhitelistEnabled() public view returns (bool) {
+        return _isWhitelistEnabled;
+    }
+
+    function addToWhitelist(address account) public onlyWhitelistOrAdmin {
         require(!isOnWhitelist(account), "Account is already on the whitelist");
         _whitelist.add(account);
         emit WhitelistAccountAdded(account);
     }
 
-    function removeFromWhitelist(address account) external onlyWhitelistOrAdmin {
+    function removeFromWhitelist(address account) public onlyWhitelistOrAdmin {
         require(isOnWhitelist(account), "Account is not on the whitelist");
         _whitelist.remove(account);
         emit WhitelistAccountRemoved(account);
-    }
-
-    function isWhitelistEnabled() public view returns (bool) {
-        return _isWhitelistEnabled;
     }
 
     function isOnWhitelist(address account) public view returns (bool) {
@@ -66,7 +66,7 @@ contract Whitelist is AccessControl {
     }
 
     function _usingWhitelist() private view {
-        if (!hasRole(DEFAULT_ADMIN_ROLE, msg.sender) && isWhitelistEnabled() && !isOnWhitelist(msg.sender))
+        if (isWhitelistEnabled() && !isOnWhitelist(msg.sender))
             revert("Sender is not on the whitelist");
     }
 }

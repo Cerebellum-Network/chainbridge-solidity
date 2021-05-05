@@ -106,17 +106,23 @@ contract('Bridge - [whitelist]', async accounts => {
 
         await TestInstance.enableWhitelist()
 
-        await TruffleAssert.passes(await TestInstance.testWhitelist({from: adminAccount}))
+        await TruffleAssert.reverts(TestInstance.testWhitelist({from: adminAccount}),
+            "Sender is not on the whitelist")
         await TruffleAssert.reverts(TestInstance.testWhitelist({from: genericAccount}),
             "Sender is not on the whitelist")
         await TruffleAssert.reverts(TestInstance.testWhitelist({from: testAccount}),
             "Sender is not on the whitelist")
 
+        await TestInstance.addToWhitelist(adminAccount);
+        await TruffleAssert.passes(await TestInstance.testWhitelist({from: adminAccount}))
         await TestInstance.addToWhitelist(genericAccount);
         await TruffleAssert.passes(await TestInstance.testWhitelist({from: genericAccount}))
         await TestInstance.addToWhitelist(testAccount);
         await TruffleAssert.passes(await TestInstance.testWhitelist({from: testAccount}))
 
+        await TestInstance.removeFromWhitelist(adminAccount);
+        await TruffleAssert.reverts(TestInstance.testWhitelist({from: adminAccount}),
+            "Sender is not on the whitelist")
         await TestInstance.removeFromWhitelist(genericAccount);
         await TruffleAssert.reverts(TestInstance.testWhitelist({from: genericAccount}),
             "Sender is not on the whitelist")
@@ -126,6 +132,7 @@ contract('Bridge - [whitelist]', async accounts => {
 
         await TestInstance.disableWhitelist()
 
+        await TruffleAssert.passes(await TestInstance.testWhitelist({from: adminAccount}))
         await TruffleAssert.passes(await TestInstance.testWhitelist({from: genericAccount}))
         await TruffleAssert.passes(await TestInstance.testWhitelist({from: testAccount}))
     });
