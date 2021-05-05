@@ -1,6 +1,7 @@
 pragma solidity >=0.6.0 <0.8.0;
 
 import "./utils/SafeCast.sol";
+import "./utils/Whitelist.sol";
 
 contract NoArgument {
     event NoArgumentCalled();
@@ -47,5 +48,17 @@ contract SafeCaster {
 
     function toUint200(uint input) external pure returns(uint200) {
         return input.toUint200();
+    }
+}
+
+contract TestWhitelist is Whitelist {
+    event TestCalled();
+
+    constructor () public {
+        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    }
+
+    function testWhitelist() external usingWhitelist {
+        emit TestCalled();
     }
 }
