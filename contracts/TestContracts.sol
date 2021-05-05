@@ -1,5 +1,8 @@
 pragma solidity >=0.6.0 <0.8.0;
 
+import "./utils/SafeCast.sol";
+import "./utils/Whitelist.sol";
+
 contract NoArgument {
     event NoArgumentCalled();
 
@@ -29,5 +32,17 @@ contract ThreeArguments {
 
     function threeArguments(string calldata argumentOne, int8 argumentTwo, bool argumentThree) external {
         emit ThreeArgumentsCalled(argumentOne, argumentTwo, argumentThree);
+    }
+}
+
+contract TestWhitelist is Whitelist {
+    event TestCalled();
+
+    constructor () public {
+        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    }
+
+    function testWhitelist() external usingWhitelist {
+        emit TestCalled();
     }
 }
