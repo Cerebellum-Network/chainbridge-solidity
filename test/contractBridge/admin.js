@@ -109,7 +109,7 @@ contract('Bridge - [admin]', async accounts => {
     it('Should set a Resource ID for handler address', async () => {
         const ERC20MintableInstance = await ERC20MintableContract.new("token", "TOK");
         const resourceID = Helpers.createResourceID(ERC20MintableInstance.address, chainID);
-        const ERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, [], [], []);
+        const ERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, [], []);
 
         assert.equal(await BridgeInstance._resourceIDToHandlerAddress.call(resourceID), Ethers.constants.AddressZero);
 
@@ -122,7 +122,7 @@ contract('Bridge - [admin]', async accounts => {
     it('Should set a ERC20 Resource ID and contract address', async () => {
         const ERC20MintableInstance = await ERC20MintableContract.new("token", "TOK");
         const resourceID = Helpers.createResourceID(ERC20MintableInstance.address, chainID);
-        const ERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, [], [], []);
+        const ERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, [], []);
 
         await TruffleAssert.passes(BridgeInstance.adminSetResource(
             ERC20HandlerInstance.address, resourceID, ERC20MintableInstance.address));
@@ -152,18 +152,18 @@ contract('Bridge - [admin]', async accounts => {
 
     // Set burnable
 
-    it('Should set ERC20MintableInstance.address as burnable', async () => {
-        const ERC20MintableInstance = await ERC20MintableContract.new("token", "TOK");
-        const resourceID = Helpers.createResourceID(ERC20MintableInstance.address, chainID);
-        const ERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, [resourceID], [ERC20MintableInstance.address], []);
+    // it('Should set ERC20MintableInstance.address as burnable', async () => {
+    //     const ERC20MintableInstance = await ERC20MintableContract.new("token", "TOK");
+    //     const resourceID = Helpers.createResourceID(ERC20MintableInstance.address, chainID);
+    //     const ERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, [resourceID], [ERC20MintableInstance.address], []);
 
-        await TruffleAssert.passes(BridgeInstance.adminSetBurnable(ERC20HandlerInstance.address, ERC20MintableInstance.address));
-        assert.isTrue(await ERC20HandlerInstance._burnList.call(ERC20MintableInstance.address));
-    });
+    //     await TruffleAssert.passes(BridgeInstance.adminSetBurnable(ERC20HandlerInstance.address, ERC20MintableInstance.address));
+    //     assert.isTrue(await ERC20HandlerInstance._burnList.call(ERC20MintableInstance.address));
+    // });
 
-    it('Should require admin role to set ERC20MintableInstance.address as burnable', async () => {
-        await assertOnlyAdmin(BridgeInstance.adminSetBurnable, someAddress, someAddress);
-    });
+    // it('Should require admin role to set ERC20MintableInstance.address as burnable', async () => {
+    //     await assertOnlyAdmin(BridgeInstance.adminSetBurnable, someAddress, someAddress);
+    // });
 
     // Set fee
 
@@ -195,7 +195,7 @@ contract('Bridge - [admin]', async accounts => {
 
         const ERC20MintableInstance = await ERC20MintableContract.new("token", "TOK");
         const resourceID = Helpers.createResourceID(ERC20MintableInstance.address, chainID);
-        const ERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, [resourceID], [ERC20MintableInstance.address], []);
+        const ERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, [resourceID], [ERC20MintableInstance.address]);
 
         await ERC20MintableInstance.mint(tokenOwner, numTokens);
         ownerBalance = await ERC20MintableInstance.balanceOf(tokenOwner);

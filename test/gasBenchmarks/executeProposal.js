@@ -8,7 +8,7 @@ const Helpers = require('../helpers');
 
 const BridgeContract = artifacts.require("Bridge");
 const ERC20HandlerContract = artifacts.require("ERC20Handler");
-const ERC20MintableContract = artifacts.require("ERC20PresetMinterPauser");
+const ERC20MintableContract = artifacts.require("Token");
 const ERC721HandlerContract = artifacts.require("ERC721Handler");
 const ERC721MintableContract = artifacts.require("ERC721MinterBurnerPauser");
 const GenericHandlerContract = artifacts.require("GenericHandler");
