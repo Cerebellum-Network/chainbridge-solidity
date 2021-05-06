@@ -85,6 +85,7 @@ contract Whitelist is AccessControl {
 
     /**
         @notice Returns true if whitelist feature is enabled
+        @return bool Value indicating whether whitelist is enabled or not
      */
     function isWhitelistEnabled() public view returns (bool) {
         return _isWhitelistEnabled;
@@ -117,19 +118,20 @@ contract Whitelist is AccessControl {
     /**
         @notice Returns true if address is whitelisted
         @param addressToCheck Address to check
+        @return bool Value indicating whether whitelist contains an address or not
      */
     function isWhitelisted(address addressToCheck) public view returns (bool) {
         return _whitelist.contains(addressToCheck);
     }
 
-    // Checks if method caller has Whitelister or Admin role
+    /// @dev Checks if method caller has Whitelister or Admin role
     function _onlyWhitelisterOrAdmin() private view {
         require(hasRole(WHITELISTER_ROLE, msg.sender)
             || hasRole(DEFAULT_ADMIN_ROLE, msg.sender),
             "Sender doesn't have Whitelister or Admin role");
     }
 
-    // Checks if method caller is whitelisted
+    /// @dev Checks if method caller is whitelisted
     function _onlyWhitelisted() private view {
         if (isWhitelistEnabled() && !isWhitelisted(msg.sender))
             revert("Sender address is not whitelisted");
