@@ -40,11 +40,10 @@ contract('Bridge - [create a deposit proposal (voteProposal) with relayerThresho
 
         initialResourceIDs = [];
         initialContractAddresses = [];
-        burnableContractAddresses = [];
 
         resourceID = Helpers.createResourceID(DestinationERC20MintableInstance.address, destinationChainID);
 
-        DestinationERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses);
+        DestinationERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses);
 
         await BridgeInstance.adminSetResource(DestinationERC20HandlerInstance.address, resourceID, DestinationERC20MintableInstance.address);
         
@@ -174,7 +173,6 @@ contract('Bridge - [create a deposit proposal (voteProposal) with relayerThresho
     let dataHash = '';
     let initialResourceIDs;
     let initialContractAddresses;
-    let burnableContractAddresses;
 
     beforeEach(async () => {
         await Promise.all([
@@ -188,7 +186,7 @@ contract('Bridge - [create a deposit proposal (voteProposal) with relayerThresho
 
         resourceID = Helpers.createResourceID(DestinationERC20MintableInstance.address, destinationChainID);
 
-        DestinationERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses);
+        DestinationERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses);
 
         await BridgeInstance.adminSetResource(DestinationERC20HandlerInstance.address, resourceID, DestinationERC20MintableInstance.address);
         
