@@ -68,7 +68,7 @@ contract Whitelist is AccessControl {
         @dev The caller must have Whitelister or Admin role
         @dev Enables whitelist if disabled and emits `Enabled` event
      */
-    function enableWhitelist() external onlyWhitelisterOrAdmin {
+    function enableWhitelist() public onlyWhitelisterOrAdmin {
         require(!isWhitelistEnabled(), "Whitelist is already enabled");
         _isWhitelistEnabled = true;
         emit Enabled(msg.sender);
@@ -79,7 +79,7 @@ contract Whitelist is AccessControl {
         @dev The caller must have Whitelister or Admin role
         @dev Disables whitelist if enabled and emits `Disabled` event
      */
-    function disableWhitelist() external onlyWhitelisterOrAdmin {
+    function disableWhitelist() public onlyWhitelisterOrAdmin {
         require(isWhitelistEnabled(), "Whitelist is already disabled");
         _isWhitelistEnabled = false;
         emit Disabled(msg.sender);
