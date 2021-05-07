@@ -4,7 +4,6 @@ pragma experimental ABIEncoderV2;
 import "../interfaces/IDepositExecute.sol";
 import "./HandlerHelpers.sol";
 import "../ERC20Safe.sol";
-import "@openzeppelin/contracts/presets/ERC20PresetMinterPauser.sol";
 
 /**
     @title Handles ERC20 deposits and deposit executions.
