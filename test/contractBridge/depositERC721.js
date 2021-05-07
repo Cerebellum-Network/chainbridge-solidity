@@ -50,8 +50,8 @@ contract('Bridge - [deposit - ERC721]', async (accounts) => {
         destinationBurnableContractAddresses = [];
 
         await Promise.all([
-            ERC721HandlerContract.new(BridgeInstance.address, originInitialResourceIDs, originInitialContractAddresses, originBurnableContractAddresses).then(instance => OriginERC721HandlerInstance = instance),
-            ERC721HandlerContract.new(BridgeInstance.address, destinationInitialResourceIDs, destinationInitialContractAddresses, destinationBurnableContractAddresses).then(instance => DestinationERC721HandlerInstance = instance)
+            ERC721HandlerContract.new(BridgeInstance.address, originInitialResourceIDs, originInitialContractAddresses).then(instance => OriginERC721HandlerInstance = instance),
+            ERC721HandlerContract.new(BridgeInstance.address, destinationInitialResourceIDs, destinationInitialContractAddresses).then(instance => DestinationERC721HandlerInstance = instance)
         ]);
 
         await Promise.all([
