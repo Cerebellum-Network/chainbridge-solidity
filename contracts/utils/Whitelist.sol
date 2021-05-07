@@ -28,6 +28,8 @@ import "./AccessControl.sol";
     The entire whitelist functionality can be enabled or disabled via the
     `enableWhitelist` and `disableWhitelist` functions. You can check if the
     feature is enabled by calling `isWhitelistEnabled` function.
+
+    The following events are emitted: Enabled, Disabled, AddressAdded, AddressRemoved
 */
 
 contract Whitelist is AccessControl {
@@ -35,13 +37,13 @@ contract Whitelist is AccessControl {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     /// @dev Emitted when whitelist feature is enabled
-    event WhitelistEnabled(address senderAddress);
+    event Enabled(address senderAddress);
     /// @dev Emitted when whitelist feature is disabled
-    event WhitelistDisabled(address senderAddress);
+    event Disabled(address senderAddress);
     /// @dev Emitted when an address is added to the whitelist
-    event WhitelistAddressAdded(address addedAddress);
+    event AddressAdded(address addedAddress);
     /// @dev Emitted when an address is removed from the whitelist
-    event WhitelistAddressRemoved(address removedAddress);
+    event AddressRemoved(address removedAddress);
 
     /// @notice Whitelister role is used for whitelist administration
     bytes32 public constant WHITELISTER_ROLE = keccak256("WHITELISTER_ROLE");
@@ -64,23 +66,23 @@ contract Whitelist is AccessControl {
     /**
         @notice Enables whitelist feature
         @dev The caller must have Whitelister or Admin role
-        @dev Enables whitelist if disabled and emits `WhitelistEnabled` event
+        @dev Enables whitelist if disabled and emits `Enabled` event
      */
     function enableWhitelist() external onlyWhitelisterOrAdmin {
         require(!isWhitelistEnabled(), "Whitelist is already enabled");
         _isWhitelistEnabled = true;
-        emit WhitelistEnabled(msg.sender);
+        emit Enabled(msg.sender);
     }
 
     /**
         @notice Disables whitelist feature
         @dev The caller must have Whitelister or Admin role
-        @dev Disables whitelist if enabled and emits `WhitelistDisabled` event
+        @dev Disables whitelist if enabled and emits `Disabled` event
      */
     function disableWhitelist() external onlyWhitelisterOrAdmin {
         require(isWhitelistEnabled(), "Whitelist is already disabled");
         _isWhitelistEnabled = false;
-        emit WhitelistDisabled(msg.sender);
+        emit Disabled(msg.sender);
     }
 
     /**
@@ -94,25 +96,25 @@ contract Whitelist is AccessControl {
     /**
         @notice Adds an address to the whitelist
         @dev The caller must have Whitelister or Admin role
-        @dev Adds an address if not whitelisted and emits `WhitelistAddressAdded` event
+        @dev Adds an address if not whitelisted and emits `AddressAdded` event
         @param addressToAdd Address that is added to the whitelist
      */
     function addToWhitelist(address addressToAdd) public onlyWhitelisterOrAdmin {
         require(!isWhitelisted(addressToAdd), "Address to add is already whitelisted");
         _whitelist.add(addressToAdd);
-        emit WhitelistAddressAdded(addressToAdd);
+        emit AddressAdded(addressToAdd);
     }
 
     /**
         @notice Removes an address from the whitelist
         @dev The caller must have Whitelister or Admin role
-        @dev Removes a whitelisted address and emits `WhitelistAddressAdded` event
+        @dev Removes a whitelisted address and emits `AddressAdded` event
         @param addressToRemove Address that is removed from the whitelist
      */
     function removeFromWhitelist(address addressToRemove) public onlyWhitelisterOrAdmin {
         require(isWhitelisted(addressToRemove), "Address to remove is not whitelisted");
         _whitelist.remove(addressToRemove);
-        emit WhitelistAddressRemoved(addressToRemove);
+        emit AddressRemoved(addressToRemove);
     }
 
     /**
