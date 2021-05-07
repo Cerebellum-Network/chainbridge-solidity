@@ -35,28 +35,28 @@ contract('Bridge - [whitelist]', async accounts => {
 
     it('should enable whitelist', async () => {
         const enableTx = await BridgeInstance.enableWhitelist();
-        TruffleAssert.eventEmitted(enableTx, 'WhitelistEnabled');
+        TruffleAssert.eventEmitted(enableTx, 'Enabled');
         assert.isTrue(await BridgeInstance.isWhitelistEnabled());
     });
 
     it('should disable whitelist', async () => {
         await BridgeInstance.enableWhitelist();
         const disableTx = await BridgeInstance.disableWhitelist();
-        TruffleAssert.eventEmitted(disableTx, 'WhitelistDisabled');
+        TruffleAssert.eventEmitted(disableTx, 'Disabled');
         assert.isFalse(await BridgeInstance.isWhitelistEnabled());
     });
 
     it('should add address to whitelist', async () => {
         assert.isFalse(await BridgeInstance.isWhitelisted(testAccount));
         const addTx = await BridgeInstance.addToWhitelist(testAccount);
-        TruffleAssert.eventEmitted(addTx, 'WhitelistAddressAdded');
+        TruffleAssert.eventEmitted(addTx, 'AddressAdded');
         assert.isTrue(await BridgeInstance.isWhitelisted(testAccount));
     });
 
     it('should remove address from whitelist', async () => {
         await BridgeInstance.addToWhitelist(testAccount);
         const removeTx = await BridgeInstance.removeFromWhitelist(testAccount);
-        TruffleAssert.eventEmitted(removeTx, 'WhitelistAddressRemoved');
+        TruffleAssert.eventEmitted(removeTx, 'AddressRemoved');
         assert.isFalse(await BridgeInstance.isWhitelisted(testAccount));
     });
 
