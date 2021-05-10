@@ -8,7 +8,7 @@ const Helpers = require('../helpers');
 
 const BridgeContract = artifacts.require("Bridge");
 const ERC20HandlerContract = artifacts.require("ERC20Handler");
-const ERC20MintableContract = artifacts.require("Token");
+const ERC20MintableContract = artifacts.require("ERC20PresetMinterPauser");
 
 contract('Gas Benchmark - [Vote Proposal]', async (accounts) => {
     const chainID = 1;
@@ -35,7 +35,7 @@ contract('Gas Benchmark - [Vote Proposal]', async (accounts) => {
     before(async () => {
         await Promise.all([
             BridgeContract.new(chainID, initialRelayers, relayerThreshold, 0, 100).then(instance => BridgeInstance = instance),
-            ERC20MintableContract.new("token", "TOK", "10", "10000000000", [], []).then(instance => ERC20MintableInstance = instance),
+            ERC20MintableContract.new("token", "TOK").then(instance => ERC20MintableInstance = instance),
         ]);
 
         erc20ResourceID = Helpers.createResourceID(ERC20MintableInstance.address, chainID);
