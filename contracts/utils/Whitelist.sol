@@ -9,6 +9,7 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
     @dev Allows developers to implement whitelisting functionality
     @dev Inherits methods and variables from AccessControl
     @dev WHITELISTER_ROLE is used to grant permissions for whitelist control
+    @dev Use `.grantRole` method from AccessControl to give a whitelister role
 
     Use `onlyWhitelisted` modifier for a method in order to restrict access
     only for whitelisted addresses:
@@ -48,7 +49,7 @@ contract Whitelist is AccessControl {
     /// @notice Whitelister role is used for whitelist administration
     bytes32 public constant WHITELISTER_ROLE = keccak256("WHITELISTER_ROLE");
 
-    bool private _isWhitelistEnabled;
+    bool private _isWhitelistEnabled = true;
     EnumerableSet.AddressSet private _whitelist;
 
     /// @dev Restricts access only for Whitelister and Admin
