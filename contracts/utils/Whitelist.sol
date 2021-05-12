@@ -34,9 +34,6 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 */
 
 contract Whitelist is AccessControl {
-    // See @openzeppelin/contracts/utils/EnumerableSet.sol for more info
-    using EnumerableSet for EnumerableSet.AddressSet;
-
     /// @dev Emitted when whitelist feature is enabled
     event Enabled(address senderAddress);
     /// @dev Emitted when whitelist feature is disabled
@@ -50,7 +47,7 @@ contract Whitelist is AccessControl {
     bytes32 public constant WHITELISTER_ROLE = keccak256("WHITELISTER_ROLE");
 
     bool private _isWhitelistEnabled = true;
-    EnumerableSet.AddressSet private _whitelist;
+    mapping (address => bool) private _whitelist;
 
     /// @dev Restricts access only for Whitelister and Admin
     modifier onlyWhitelisterOrAdmin() {
@@ -102,7 +99,7 @@ contract Whitelist is AccessControl {
      */
     function addToWhitelist(address addressToAdd) public onlyWhitelisterOrAdmin {
         require(!isWhitelisted(addressToAdd), "Address to add is already whitelisted");
-        _whitelist.add(addressToAdd);
+        _whitelist[addressToAdd] = true;
         emit AddressAdded(addressToAdd);
     }
 
@@ -114,7 +111,7 @@ contract Whitelist is AccessControl {
      */
     function removeFromWhitelist(address addressToRemove) public onlyWhitelisterOrAdmin {
         require(isWhitelisted(addressToRemove), "Address to remove is not whitelisted");
-        _whitelist.remove(addressToRemove);
+        _whitelist[addressToRemove] = false;
         emit AddressRemoved(addressToRemove);
     }
 
@@ -124,7 +121,7 @@ contract Whitelist is AccessControl {
         @return bool Value indicating whether whitelist contains an address or not
      */
     function isWhitelisted(address addressToCheck) public view returns (bool) {
-        return _whitelist.contains(addressToCheck);
+        return _whitelist[addressToCheck] == true;
     }
 
     /// @dev Checks if method caller has Whitelister or Admin role
