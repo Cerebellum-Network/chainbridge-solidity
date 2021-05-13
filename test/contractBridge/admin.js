@@ -136,17 +136,6 @@ contract('Bridge - [admin]', async accounts => {
         assert.equal(await GenericHandlerInstance._contractAddressToResourceID.call(CentrifugeAssetInstance.address), resourceID.toLowerCase());
     });
 
-    // Set burnable
-
-    // it('Should set ERC20MintableInstance.address as burnable', async () => {
-    //     const ERC20MintableInstance = await ERC20MintableContract.new("token", "TOK");
-    //     const resourceID = Helpers.createResourceID(ERC20MintableInstance.address, chainID);
-    //     const ERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, [resourceID], [ERC20MintableInstance.address], []);
-
-    //     await TruffleAssert.passes(BridgeInstance.adminSetBurnable(ERC20HandlerInstance.address, ERC20MintableInstance.address));
-    //     assert.isTrue(await ERC20HandlerInstance._burnList.call(ERC20MintableInstance.address));
-    // });
-
     // Set fee
 
     it('Should set fee', async () => {
