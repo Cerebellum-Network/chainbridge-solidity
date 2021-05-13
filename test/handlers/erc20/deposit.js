@@ -8,7 +8,7 @@ const Ethers = require('ethers');
 const Helpers = require('../../helpers');
 
 const BridgeContract = artifacts.require("Bridge");
-const ERC20MintableContract = artifacts.require("ERC20PresetMinterPauser");
+const ERC20MintableContract = artifacts.require("Token");
 const ERC20HandlerContract = artifacts.require("ERC20Handler");
 
 contract('ERC20Handler - [Deposit ERC20]', async (accounts) => {
@@ -25,22 +25,19 @@ contract('ERC20Handler - [Deposit ERC20]', async (accounts) => {
     let resourceID;
     let initialResourceIDs;
     let initialContractAddresses;
-    let burnableContractAddresses;
 
     beforeEach(async () => {
         await Promise.all([
             BridgeContract.new(chainID, [], relayerThreshold, 0, 100).then(instance => BridgeInstance = instance),
-            ERC20MintableContract.new("token", "TOK").then(instance => ERC20MintableInstance = instance)
+            ERC20MintableContract.new("token", "TOK", 10, tokenAmount, [depositerAddress], [tokenAmount]).then(instance => ERC20MintableInstance = instance)
         ]);
         
         resourceID = Helpers.createResourceID(ERC20MintableInstance.address, chainID);
         initialResourceIDs = [resourceID];
         initialContractAddresses = [ERC20MintableInstance.address];
-        burnableContractAddresses = []
 
         await Promise.all([
-            ERC20HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses).then(instance => ERC20HandlerInstance = instance),
-            ERC20MintableInstance.mint(depositerAddress, tokenAmount)
+            ERC20HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses).then(instance => ERC20HandlerInstance = instance),
         ]);
 
         await Promise.all([
