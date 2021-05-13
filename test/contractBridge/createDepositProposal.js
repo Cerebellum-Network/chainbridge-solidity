@@ -9,7 +9,7 @@ const Ethers = require('ethers');
 const Helpers = require('../helpers');
 
 const BridgeContract = artifacts.require("Bridge");
-const ERC20MintableContract = artifacts.require("ERC20PresetMinterPauser");
+const ERC20MintableContract = artifacts.require("Token");
 const ERC20HandlerContract = artifacts.require("ERC20Handler");
 
 contract('Bridge - [create a deposit proposal (voteProposal) with relayerThreshold = 1]', async (accounts) => {
@@ -30,21 +30,19 @@ contract('Bridge - [create a deposit proposal (voteProposal) with relayerThresho
     let dataHash = '';
     let initialResourceIDs;
     let initialContractAddresses;
-    let burnableContractAddresses;
 
     beforeEach(async () => {
         await Promise.all([
-            ERC20MintableContract.new("token", "TOK").then(instance => DestinationERC20MintableInstance = instance),
+            ERC20MintableContract.new("token", "TOK", 10, 10, [], []).then(instance => DestinationERC20MintableInstance = instance),
             BridgeContract.new(originChainID, [originChainRelayerAddress], relayerThreshold, 0, 100).then(instance => BridgeInstance = instance)
         ]);
 
         initialResourceIDs = [];
         initialContractAddresses = [];
-        burnableContractAddresses = [];
 
         resourceID = Helpers.createResourceID(DestinationERC20MintableInstance.address, destinationChainID);
 
-        DestinationERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses);
+        DestinationERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses);
 
         await BridgeInstance.adminSetResource(DestinationERC20HandlerInstance.address, resourceID, DestinationERC20MintableInstance.address);
         
@@ -174,21 +172,19 @@ contract('Bridge - [create a deposit proposal (voteProposal) with relayerThresho
     let dataHash = '';
     let initialResourceIDs;
     let initialContractAddresses;
-    let burnableContractAddresses;
 
     beforeEach(async () => {
         await Promise.all([
-            ERC20MintableContract.new("token", "TOK").then(instance => DestinationERC20MintableInstance = instance),
+            ERC20MintableContract.new("token", "TOK", 10, 10, [], []).then(instance => DestinationERC20MintableInstance = instance),
             BridgeContract.new(originChainID, [originChainRelayerAddress], relayerThreshold, 0, 100).then(instance => BridgeInstance = instance)
         ]);
         
         initialResourceIDs = [];
         initialContractAddresses = [];
-        burnableContractAddresses = [];
 
         resourceID = Helpers.createResourceID(DestinationERC20MintableInstance.address, destinationChainID);
 
-        DestinationERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses);
+        DestinationERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses);
 
         await BridgeInstance.adminSetResource(DestinationERC20HandlerInstance.address, resourceID, DestinationERC20MintableInstance.address);
         
