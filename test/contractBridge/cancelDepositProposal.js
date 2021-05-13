@@ -9,7 +9,7 @@ const Ethers = require('ethers');
 const Helpers = require('../helpers');
 
 const BridgeContract = artifacts.require("Bridge");
-const ERC20MintableContract = artifacts.require("ERC20PresetMinterPauser");
+const ERC20MintableContract = artifacts.require("Token");
 const ERC20HandlerContract = artifacts.require("ERC20Handler");
 
 contract('Bridge - [voteProposal with relayerThreshold == 3]', async (accounts) => {
@@ -33,7 +33,6 @@ contract('Bridge - [voteProposal with relayerThreshold == 3]', async (accounts) 
     let resourceID = '';
     let initialResourceIDs;
     let initialContractAddresses;
-    let burnableContractAddresses;
 
     let vote, executeProposal;
 
@@ -47,21 +46,19 @@ contract('Bridge - [voteProposal with relayerThreshold == 3]', async (accounts) 
                 relayerThreshold, 
                 0,
                 10,).then(instance => BridgeInstance = instance),
-            ERC20MintableContract.new("token", "TOK").then(instance => DestinationERC20MintableInstance = instance)
+            ERC20MintableContract.new("token", "TOK", 10, 10, [], []).then(instance => DestinationERC20MintableInstance = instance)
         ]);
         
         resourceID = Helpers.createResourceID(DestinationERC20MintableInstance.address, originChainID);
         initialResourceIDs = [resourceID];
         initialContractAddresses = [DestinationERC20MintableInstance.address];
-        burnableContractAddresses = [DestinationERC20MintableInstance.address];
 
-        DestinationERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses);
+        DestinationERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses);
 
         depositData = Helpers.createERCDepositData(depositAmount, 32, destinationChainRecipientAddress);
         depositDataHash = Ethers.utils.keccak256(DestinationERC20HandlerInstance.address + depositData.substr(2));
 
         await Promise.all([
-            DestinationERC20MintableInstance.grantRole(await DestinationERC20MintableInstance.MINTER_ROLE(), DestinationERC20HandlerInstance.address),
             BridgeInstance.adminSetResource(DestinationERC20HandlerInstance.address, resourceID, DestinationERC20MintableInstance.address)
         ]);
 
