@@ -7,7 +7,7 @@ const TruffleAssert = require('truffle-assertions');
 const Ethers = require('ethers');
 
 const BridgeContract = artifacts.require("Bridge");
-const ERC20MintableContract = artifacts.require("ERC20PresetMinterPauser");
+const ERC20MintableContract = artifacts.require("Token");
 const ERC20HandlerContract = artifacts.require("ERC20Handler");
 
 contract('ERC20Handler - [isWhitelisted]', async () => {
@@ -21,28 +21,26 @@ contract('ERC20Handler - [isWhitelisted]', async () => {
     let ERC20MintableInstance2;
     let initialResourceIDs;
     let initialContractAddresses;
-    let burnableContractAddresses;
 
     beforeEach(async () => {
         await Promise.all([
             BridgeContract.new(chainID, [], relayerThreshold, 0, 100).then(instance => BridgeInstance = instance),
-            ERC20MintableContract.new("token", "TOK").then(instance => ERC20MintableInstance1 = instance),
-            ERC20MintableContract.new("token", "TOK").then(instance => ERC20MintableInstance2 = instance)
+            ERC20MintableContract.new("token", "TOK", 10, 10, [], []).then(instance => ERC20MintableInstance1 = instance),
+            ERC20MintableContract.new("token", "TOK", 10, 10, [], []).then(instance => ERC20MintableInstance2 = instance)
         ])
 
         initialResourceIDs = [];
         resourceID1 = Ethers.utils.hexZeroPad((ERC20MintableInstance1.address + Ethers.utils.hexlify(chainID).substr(2)), 32);
         initialResourceIDs.push(resourceID1);
         initialContractAddresses = [ERC20MintableInstance1.address];
-        burnableContractAddresses = [];
     });
 
     it('[sanity] contract should be deployed successfully', async () => {
-        TruffleAssert.passes(await ERC20HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses));
+        TruffleAssert.passes(await ERC20HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses));
     });
 
     it('initialContractAddress should be whitelisted', async () => {
-        const ERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses);
+        const ERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses);
         const isWhitelisted = await ERC20HandlerInstance._contractWhitelist.call(ERC20MintableInstance1.address);
         assert.isTrue(isWhitelisted, "Contract wasn't successfully whitelisted");
     });
