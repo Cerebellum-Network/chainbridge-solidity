@@ -23,8 +23,8 @@ contract('Bridge - [whitelist]', async accounts => {
 
     beforeEach(async () => {
         BridgeInstance = await BridgeContract.new(chainID, initialRelayers, initialRelayerThreshold, 0, 100);
-        ADMIN_ROLE = BridgeInstance.DEFAULT_ADMIN_ROLE;
-        WHITELISTER_ROLE = BridgeInstance.WHITELISTER_ROLE;
+        ADMIN_ROLE = await BridgeInstance.DEFAULT_ADMIN_ROLE();
+        WHITELISTER_ROLE = await BridgeInstance.WHITELISTER_ROLE();
     });
 
     // Testing whitelist methods
