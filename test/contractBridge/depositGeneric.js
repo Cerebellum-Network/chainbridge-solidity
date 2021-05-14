@@ -11,11 +11,11 @@ const BridgeContract = artifacts.require("Bridge");
 const CentrifugeAssetContract = artifacts.require("CentrifugeAsset");
 const GenericHandlerContract = artifacts.require("GenericHandler");
 
-contract('Bridge - [deposit - Generic]', async () => {
+contract('Bridge - [deposit - Generic]', async (accounts) => {
     const originChainID = 1;
     const destinationChainID = 2;
     const expectedDepositNonce = 1;
-    
+
     let BridgeInstance;
     let GenericHandlerInstance;
     let depositData;
@@ -29,7 +29,7 @@ contract('Bridge - [deposit - Generic]', async () => {
             CentrifugeAssetContract.new().then(instance => CentrifugeAssetInstance = instance),
             BridgeInstance = BridgeContract.new(originChainID, [], 0, 0, 100).then(instance => BridgeInstance = instance)
         ]);
-        
+
         resourceID = Helpers.createResourceID(CentrifugeAssetInstance.address, originChainID)
         initialResourceIDs = [resourceID];
         initialContractAddresses = [CentrifugeAssetInstance.address];
@@ -42,7 +42,7 @@ contract('Bridge - [deposit - Generic]', async () => {
             initialContractAddresses,
             initialDepositFunctionSignatures,
             initialExecuteFunctionSignatures);
-            
+
         await BridgeInstance.adminSetGenericResource(GenericHandlerInstance.address, resourceID,  initialContractAddresses[0], initialDepositFunctionSignatures[0], initialExecuteFunctionSignatures[0]);
 
         depositData = Helpers.createGenericDepositData('0xdeadbeef');
@@ -53,6 +53,17 @@ contract('Bridge - [deposit - Generic]', async () => {
             destinationChainID,
             resourceID,
             depositData
+        ));
+    });
+
+    it('Generic deposit cannot be made if not whitelisted', async () => {
+        const testAddress = accounts[3];
+
+        TruffleAssert.fails(BridgeInstance.deposit(
+            destinationChainID,
+            resourceID,
+            depositData,
+            { from: testAddress }
         ));
     });
 
@@ -73,7 +84,7 @@ contract('Bridge - [deposit - Generic]', async () => {
             resourceID,
             depositData
         );
-        
+
         const depositRecord = await BridgeInstance._depositRecords.call(expectedDepositNonce, destinationChainID);
         assert.strictEqual(depositRecord, depositData.toLowerCase(), "Stored depositRecord does not match original depositData");
     });
