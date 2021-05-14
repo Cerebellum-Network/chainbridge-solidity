@@ -30,8 +30,10 @@ contract('ERC721Handler - [Deposit ERC721]', async (accounts) => {
         await Promise.all([
             BridgeContract.new(chainID, [], relayerThreshold, 0, 100).then(instance => BridgeInstance = instance),
             ERC721MintableContract.new("token", "TOK", "").then(instance => ERC721MintableInstance = instance)
-        ])
-        
+        ]);
+
+        await BridgeInstance.addToWhitelist(depositerAddress);
+
         resourceID = Helpers.createResourceID(ERC721MintableInstance.address, chainID);
         initialResourceIDs = [resourceID];
         initialContractAddresses = [ERC721MintableInstance.address];
@@ -71,7 +73,7 @@ contract('ERC721Handler - [Deposit ERC721]', async (accounts) => {
             _tokenID: tokenID,
             _metaData: '0x'
         };
-        
+
         await BridgeInstance.deposit(
             chainID,
             resourceID,

@@ -20,7 +20,7 @@ contract('Bridge - [deposit - ERC20]', async (accounts) => {
     const originChainInitialTokenAmount = 100;
     const depositAmount = 10;
     const expectedDepositNonce = 1;
-    
+
     let BridgeInstance;
     let OriginERC20MintableInstance;
     let OriginERC20HandlerInstance;
@@ -33,8 +33,9 @@ contract('Bridge - [deposit - ERC20]', async (accounts) => {
             ERC20MintableContract.new("token", "TOK", 10, originChainInitialTokenAmount, [depositerAddress], [originChainInitialTokenAmount]).then(instance => OriginERC20MintableInstance = instance),
             BridgeInstance = await BridgeContract.new(originChainID, [], relayerThreshold, 0, 100)
         ]);
-        
-        
+
+        await BridgeInstance.addToWhitelist(depositerAddress);
+
         resourceID = Helpers.createResourceID(OriginERC20MintableInstance.address, originChainID);
         initialResourceIDs = [];
         initialContractAddresses = [];

@@ -49,6 +49,9 @@ contract('E2E ERC721 - Two EVM Chains', async accounts => {
             ERC721MintableContract.new("token", "TOK", "").then(instance => DestinationERC721MintableInstance = instance)
         ]);
         
+        await OriginBridgeInstance.addToWhitelist(depositerAddress);
+        await DestinationBridgeInstance.addToWhitelist(recipientAddress);
+
         originResourceID = Helpers.createResourceID(OriginERC721MintableInstance.address, originChainID);
         originInitialResourceIDs = [originResourceID];
         originInitialContractAddresses = [OriginERC721MintableInstance.address];

@@ -32,6 +32,8 @@ contract('ERC20Handler - [Deposit ERC20]', async (accounts) => {
             ERC20MintableContract.new("token", "TOK", 10, tokenAmount, [depositerAddress], [tokenAmount]).then(instance => ERC20MintableInstance = instance)
         ]);
         
+        await BridgeInstance.addToWhitelist(depositerAddress);
+
         resourceID = Helpers.createResourceID(ERC20MintableInstance.address, chainID);
         initialResourceIDs = [resourceID];
         initialContractAddresses = [ERC20MintableInstance.address];

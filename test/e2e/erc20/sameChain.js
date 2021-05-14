@@ -37,6 +37,8 @@ contract('E2E ERC20 - Same Chain', async accounts => {
             ERC20MintableContract.new("token", "TOK", 10, initialTokenAmount, [depositerAddress], [initialTokenAmount]).then(instance => ERC20MintableInstance = instance)
         ]);
         
+        await BridgeInstance.addToWhitelist(depositerAddress);
+
         resourceID = Helpers.createResourceID(ERC20MintableInstance.address, chainID);
     
         initialResourceIDs = [resourceID];

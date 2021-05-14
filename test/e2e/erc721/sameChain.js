@@ -38,6 +38,8 @@ contract('E2E ERC721 - Same Chain', async accounts => {
             ERC721MintableContract.new("token", "TOK", "").then(instance => ERC721MintableInstance = instance)
         ]);
         
+        await BridgeInstance.addToWhitelist(depositerAddress);
+
         resourceID = Helpers.createResourceID(ERC721MintableInstance.address, chainID);
         initialResourceIDs = [resourceID];
         initialContractAddresses = [ERC721MintableInstance.address];
