@@ -8,7 +8,7 @@ const Ethers = require('ethers');
 const Helpers = require('../helpers');
 
 const BridgeContract = artifacts.require("Bridge");
-const ERC20MintableContract = artifacts.require("ERC20PresetMinterPauser");
+const ERC20MintableContract = artifacts.require("Token");
 const ERC20HandlerContract = artifacts.require("ERC20Handler");
 const GenericHandlerContract = artifacts.require('GenericHandler');
 const CentrifugeAssetContract = artifacts.require("CentrifugeAsset");
@@ -101,9 +101,9 @@ contract('Bridge - [admin]', async accounts => {
     // Set Handler Address
 
     it('Should set a Resource ID for handler address', async () => {
-        const ERC20MintableInstance = await ERC20MintableContract.new("token", "TOK");
+        const ERC20MintableInstance = await ERC20MintableContract.new("token", "TOK", 10, 10, [], []);
         const resourceID = Helpers.createResourceID(ERC20MintableInstance.address, chainID);
-        const ERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, [], [], []);
+        const ERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, [], []);
 
         assert.equal(await BridgeInstance._resourceIDToHandlerAddress.call(resourceID), Ethers.constants.AddressZero);
 
@@ -114,9 +114,9 @@ contract('Bridge - [admin]', async accounts => {
     // Set resource ID
 
     it('Should set a ERC20 Resource ID and contract address', async () => {
-        const ERC20MintableInstance = await ERC20MintableContract.new("token", "TOK");
+        const ERC20MintableInstance = await ERC20MintableContract.new("token", "TOK", 10, 10, [], []);
         const resourceID = Helpers.createResourceID(ERC20MintableInstance.address, chainID);
-        const ERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, [], [], []);
+        const ERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, [], []);
 
         TruffleAssert.passes(await BridgeInstance.adminSetResource(
             ERC20HandlerInstance.address, resourceID, ERC20MintableInstance.address));
@@ -134,17 +134,6 @@ contract('Bridge - [admin]', async accounts => {
         TruffleAssert.passes(await BridgeInstance.adminSetGenericResource(GenericHandlerInstance.address, resourceID, CentrifugeAssetInstance.address, '0x00000000', '0x00000000'));
         assert.equal(await GenericHandlerInstance._resourceIDToContractAddress.call(resourceID), CentrifugeAssetInstance.address);
         assert.equal(await GenericHandlerInstance._contractAddressToResourceID.call(CentrifugeAssetInstance.address), resourceID.toLowerCase());
-    });
-
-    // Set burnable
-
-    it('Should set ERC20MintableInstance.address as burnable', async () => {
-        const ERC20MintableInstance = await ERC20MintableContract.new("token", "TOK");
-        const resourceID = Helpers.createResourceID(ERC20MintableInstance.address, chainID);
-        const ERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, [resourceID], [ERC20MintableInstance.address], []);
-
-        TruffleAssert.passes(await BridgeInstance.adminSetBurnable(ERC20HandlerInstance.address, ERC20MintableInstance.address));
-        assert.isTrue(await ERC20HandlerInstance._burnList.call(ERC20MintableInstance.address));
     });
 
     // Set fee
@@ -167,11 +156,10 @@ contract('Bridge - [admin]', async accounts => {
         let ownerBalance;
         let handlerBalance;
 
-        const ERC20MintableInstance = await ERC20MintableContract.new("token", "TOK");
+        const ERC20MintableInstance = await ERC20MintableContract.new("token", "TOK", 10, 10, [tokenOwner], [10]);
         const resourceID = Helpers.createResourceID(ERC20MintableInstance.address, chainID);
-        const ERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, [resourceID], [ERC20MintableInstance.address], []);
-
-        await ERC20MintableInstance.mint(tokenOwner, numTokens);
+        const ERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, [resourceID], [ERC20MintableInstance.address]);
+        
         ownerBalance = await ERC20MintableInstance.balanceOf(tokenOwner);
         assert.equal(ownerBalance, numTokens);
             

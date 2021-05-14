@@ -39,6 +39,8 @@ contract ERC721Handler is IDepositExecute, HandlerHelpers, ERC721Safe {
         These are the Resource IDs this contract will initially support.
         @param initialContractAddresses These are the addresses the {initialResourceIDs} will point to, and are the contracts that will be
         called to perform various deposit calls.
+        @param burnableContractAddresses These addresses will be set as burnable and when {deposit} is called, the deposited token will be burned.
+        When {executeProposal} is called, new tokens will be minted.
 
         @dev {initialResourceIDs} and {initialContractAddresses} must have the same length (one resourceID for every address).
         Also, these arrays must be ordered in the way that {initialResourceIDs}[0] is the intended resourceID for {initialContractAddresses}[0].
@@ -46,7 +48,8 @@ contract ERC721Handler is IDepositExecute, HandlerHelpers, ERC721Safe {
     constructor(
         address bridgeAddress,
         bytes32[] memory initialResourceIDs,
-        address[] memory initialContractAddresses
+        address[] memory initialContractAddresses,
+        address[] memory burnableContractAddresses
     ) public {
         require(initialResourceIDs.length == initialContractAddresses.length,
             "initialResourceIDs and initialContractAddresses len mismatch");
@@ -57,6 +60,9 @@ contract ERC721Handler is IDepositExecute, HandlerHelpers, ERC721Safe {
             _setResource(initialResourceIDs[i], initialContractAddresses[i]);
         }
 
+        for (uint256 i = 0; i < burnableContractAddresses.length; i++) {
+            _setBurnable(burnableContractAddresses[i]);
+        }
     }
 
     /**
@@ -89,7 +95,8 @@ contract ERC721Handler is IDepositExecute, HandlerHelpers, ERC721Safe {
         destinationRecipientAddress                   bytes    bytes    64 - (64 + len(destinationRecipientAddress))
         @notice If the corresponding {tokenAddress} for the parsed {resourceID} supports {_INTERFACE_ERC721_METADATA},
         then {metaData} will be set according to the {tokenURI} method in the token contract.
-        @dev Deposited tokens will be locked.
+        @dev Depending if the corresponding {tokenAddress} for the parsed {resourceID} is
+        marked true in {_burnList}, deposited tokens will be burned, if not, they will be locked.
      */
     function deposit(bytes32    resourceID,
                     uint8       destinationChainID,
@@ -133,7 +140,11 @@ contract ERC721Handler is IDepositExecute, HandlerHelpers, ERC721Safe {
             metaData = bytes(erc721.tokenURI(tokenID));
         }
 
-        lockERC721(tokenAddress, depositer, address(this), tokenID);
+        if (_burnList[tokenAddress]) {
+            burnERC721(tokenAddress, tokenID);
+        } else {
+            lockERC721(tokenAddress, depositer, address(this), tokenID);
+        }
 
         _depositRecords[destinationChainID][depositNonce] = DepositRecord(
             tokenAddress,
@@ -212,7 +223,11 @@ contract ERC721Handler is IDepositExecute, HandlerHelpers, ERC721Safe {
         address tokenAddress = _resourceIDToTokenContractAddress[resourceID];
         require(_contractWhitelist[address(tokenAddress)], "provided tokenAddress is not whitelisted");
 
-        releaseERC721(tokenAddress, address(this), address(recipientAddress), tokenID);
+        if (_burnList[tokenAddress]) {
+            mintERC721(tokenAddress, address(recipientAddress), tokenID, metaData);
+        } else {
+            releaseERC721(tokenAddress, address(this), address(recipientAddress), tokenID);
+        }
     }
 
     /**

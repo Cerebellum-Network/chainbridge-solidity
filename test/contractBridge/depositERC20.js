@@ -8,7 +8,7 @@ const TruffleAssert = require('truffle-assertions');
 const Helpers = require('../helpers');
 
 const BridgeContract = artifacts.require("Bridge");
-const ERC20MintableContract = artifacts.require("ERC20PresetMinterPauser");
+const ERC20MintableContract = artifacts.require("Token");
 const ERC20HandlerContract = artifacts.require("ERC20Handler");
 
 contract('Bridge - [deposit - ERC20]', async (accounts) => {
@@ -27,11 +27,10 @@ contract('Bridge - [deposit - ERC20]', async (accounts) => {
     let depositData;
     let initialResourceIDs;
     let initialContractAddresses;
-    let burnableContractAddresses;
 
     beforeEach(async () => {
         await Promise.all([
-            ERC20MintableContract.new("token", "TOK").then(instance => OriginERC20MintableInstance = instance),
+            ERC20MintableContract.new("token", "TOK", 10, originChainInitialTokenAmount, [depositerAddress], [originChainInitialTokenAmount]).then(instance => OriginERC20MintableInstance = instance),
             BridgeInstance = await BridgeContract.new(originChainID, [], relayerThreshold, 0, 100)
         ]);
         
@@ -39,13 +38,11 @@ contract('Bridge - [deposit - ERC20]', async (accounts) => {
         resourceID = Helpers.createResourceID(OriginERC20MintableInstance.address, originChainID);
         initialResourceIDs = [];
         initialContractAddresses = [];
-        burnableContractAddresses = [];
 
-        OriginERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses);
+        OriginERC20HandlerInstance = await ERC20HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses);
 
         await Promise.all([
             BridgeInstance.adminSetResource(OriginERC20HandlerInstance.address, resourceID, OriginERC20MintableInstance.address),
-            OriginERC20MintableInstance.mint(depositerAddress, originChainInitialTokenAmount)
         ]);
         await OriginERC20MintableInstance.approve(OriginERC20HandlerInstance.address, depositAmount * 2, { from: depositerAddress });
 

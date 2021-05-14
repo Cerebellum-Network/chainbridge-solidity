@@ -28,7 +28,7 @@ contract('Gas Benchmark - [contract deployments]', async () => {
         let contractInstances = [await BridgeContract.new(chainID, [], relayerThreshold, 0, 100).then(instance => BridgeInstance = instance)];
         contractInstances = contractInstances.concat(
             await Promise.all([
-                ERC20HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses),
+                ERC20HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses),
                 ERC721HandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses, burnableContractAddresses),
                 GenericHandlerContract.new(BridgeInstance.address, initialResourceIDs, initialContractAddresses, initialDepositFunctionSignatures, initialExecuteFunctionSignatures),
                 CentrifugeAssetContract.new(centrifugeAssetMinCount),
