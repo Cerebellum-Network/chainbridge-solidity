@@ -46,6 +46,8 @@ contract('GenericHandler - [deposit]', async (accounts) => {
             ThreeArgumentsContract.new().then(instance => ThreeArgumentsInstance = instance)
         ]);
 
+        await BridgeInstance.addToWhitelist(depositerAddress);
+
         initialResourceIDs = [
             Helpers.createResourceID(CentrifugeAssetInstance.address, chainID),
             Helpers.createResourceID(NoArgumentInstance.address, chainID),

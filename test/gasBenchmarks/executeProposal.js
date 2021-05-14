@@ -66,6 +66,8 @@ contract('Gas Benchmark - [Execute Proposal]', async (accounts) => {
             ThreeArgumentsContract.new().then(instance => ThreeArgumentsInstance = instance)
         ]);
 
+        await BridgeInstance.addToWhitelist(depositerAddress);
+
         erc20ResourceID = Helpers.createResourceID(ERC20MintableInstance.address, chainID);
         erc721ResourceID = Helpers.createResourceID(ERC721MintableInstance.address, chainID);
         centrifugeAssetResourceID = Helpers.createResourceID(CentrifugeAssetInstance.address, chainID);

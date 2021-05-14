@@ -38,6 +38,8 @@ contract('ERC721Handler - [Deposit Burn ERC721]', async (accounts) => {
             ERC721MintableContract.new("token", "TOK", "").then(instance => ERC721MintableInstance2 = instance)
         ])
 
+        await BridgeInstance.addToWhitelist(depositerAddress);
+
         resourceID1 = Helpers.createResourceID(ERC721MintableInstance1.address, chainID);
         resourceID2 = Helpers.createResourceID(ERC721MintableInstance2.address, chainID);
         initialResourceIDs = [resourceID1, resourceID2];

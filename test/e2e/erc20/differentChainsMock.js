@@ -52,6 +52,9 @@ contract('E2E ERC20 - Two EVM Chains', async accounts => {
             ERC20MintableContract.new("token", "TOK", 10, initialTokenAmount, [depositerAddress], [initialTokenAmount]).then(instance => DestinationERC20MintableInstance = instance)
         ]);
 
+        await OriginBridgeInstance.addToWhitelist(depositerAddress);
+        await DestinationBridgeInstance.addToWhitelist(recipientAddress);
+
         originResourceID = Helpers.createResourceID(OriginERC20MintableInstance.address, originChainID);
         originInitialResourceIDs = [originResourceID];
         originInitialContractAddresses = [OriginERC20MintableInstance.address];

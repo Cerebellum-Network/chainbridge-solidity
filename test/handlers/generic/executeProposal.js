@@ -42,6 +42,8 @@ contract('GenericHandler - [Execute Proposal]', async (accounts) => {
             CentrifugeAssetContract.new(centrifugeAssetMinCount).then(instance => CentrifugeAssetInstance = instance)
         ]);
 
+        await BridgeInstance.addToWhitelist(depositerAddress);
+
         const centrifugeAssetFuncSig = Helpers.getFunctionSignature(CentrifugeAssetInstance, 'store');
 
         resourceID = Helpers.createResourceID(CentrifugeAssetInstance.address, chainID);

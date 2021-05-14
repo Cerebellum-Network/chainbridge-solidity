@@ -19,7 +19,7 @@ contract('Bridge - [deposit - ERC721]', async (accounts) => {
     const originChainTokenID = 42;
     const expectedDepositNonce = 1;
     const genericBytes = '0x736f796c656e745f677265656e5f69735f70656f706c65';
-    
+
     let BridgeInstance;
     let OriginERC721MintableInstance;
     let OriginERC721HandlerInstance;
@@ -29,7 +29,7 @@ contract('Bridge - [deposit - ERC721]', async (accounts) => {
     let originInitialResourceIDs;
     let originInitialContractAddresses;
     let originBurnableContractAddresses;
-    
+
     let destinationInitialResourceIDs;
     let destinationInitialContractAddresses;
     let destinationBurnableContractAddresses;
@@ -39,12 +39,14 @@ contract('Bridge - [deposit - ERC721]', async (accounts) => {
             ERC721MintableContract.new("token", "TOK", "").then(instance => OriginERC721MintableInstance = instance),
             BridgeContract.new(originChainID, [], 0, 0, 100).then(instance => BridgeInstance = instance)
         ]);
-        
+
+        await BridgeInstance.addToWhitelist(depositerAddress);
+
         originResourceID = Helpers.createResourceID(OriginERC721MintableInstance.address, originChainID);
         originInitialResourceIDs = [];
         originInitialContractAddresses = [];
         originBurnableContractAddresses =[];
-        
+
         destinationInitialResourceIDs = [];
         destinationInitialContractAddresses = [];
         destinationBurnableContractAddresses = [];
@@ -58,7 +60,7 @@ contract('Bridge - [deposit - ERC721]', async (accounts) => {
             BridgeInstance.adminSetResource(OriginERC721HandlerInstance.address, originResourceID, OriginERC721MintableInstance.address),
             OriginERC721MintableInstance.mint(depositerAddress, originChainTokenID, genericBytes)
         ]);
-        
+
         await OriginERC721MintableInstance.approve(OriginERC721HandlerInstance.address, originChainTokenID, { from: depositerAddress });
 
         depositData = Helpers.createERCDepositData(

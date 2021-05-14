@@ -4,6 +4,7 @@ pragma experimental ABIEncoderV2;
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "./utils/Pausable.sol";
 import "./utils/SafeMath.sol";
+import "./utils/Whitelist.sol";
 import "./interfaces/IDepositExecute.sol";
 import "./interfaces/IBridge.sol";
 import "./interfaces/IERCHandler.sol";
@@ -13,7 +14,7 @@ import "./interfaces/IGenericHandler.sol";
     @title Facilitates deposits, creation and votiing of deposit proposals, and deposit executions.
     @author ChainSafe Systems.
  */
-contract Bridge is Pausable, AccessControl, SafeMath {
+contract Bridge is Pausable, AccessControl, SafeMath, Whitelist {
 
     uint8   public _chainID;
     uint256 public _relayerThreshold;
@@ -114,6 +115,7 @@ contract Bridge is Pausable, AccessControl, SafeMath {
 
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setRoleAdmin(RELAYER_ROLE, DEFAULT_ADMIN_ROLE);
+        addToWhitelist(msg.sender);
 
         for (uint i; i < initialRelayers.length; i++) {
             grantRole(RELAYER_ROLE, initialRelayers[i]);
@@ -289,7 +291,7 @@ contract Bridge is Pausable, AccessControl, SafeMath {
         @param data Additional data to be passed to specified handler.
         @notice Emits {Deposit} event.
      */
-    function deposit(uint8 destinationChainID, bytes32 resourceID, bytes calldata data) external payable whenNotPaused {
+    function deposit(uint8 destinationChainID, bytes32 resourceID, bytes calldata data) external payable whenNotPaused onlyWhitelisted {
         require(msg.value == _fee, "Incorrect fee supplied");
 
         address handler = _resourceIDToHandlerAddress[resourceID];
