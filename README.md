@@ -30,4 +30,6 @@ Requires `nodejs` and `npm`.
 
 `make compile`: Compile contracts.
 
+`truffle run verify contract-name@contract-address --network NETWORK`: Verify contract.
+
 

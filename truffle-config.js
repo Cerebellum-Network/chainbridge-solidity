@@ -1,3 +1,9 @@
+const HDWalletProvider = require('@truffle/hdwallet-provider');
+const fs = require('fs');
+
+const infuraProjectID = fs.readFileSync(".infura-project-id").toString().trim();
+const privateKey = fs.readFileSync(".private-key").toString().trim();
+
 /**
  * Copyright 2020 ChainSafe Systems
  * SPDX-License-Identifier: LGPL-3.0-only
@@ -40,7 +46,7 @@ module.exports = {
    * $ truffle test --network <network-name>
    */
 
-  plugins: ["solidity-coverage"],
+  plugins: ["solidity-coverage", "truffle-plugin-verify"],
   networks: {
     // Useful for testing. The `development` name is special - truffle uses it by default
     // if it's defined here and no other network is specified at the command line.
@@ -86,6 +92,17 @@ module.exports = {
       // network_id: 2111,   // This network is yours, in the cloud.
       // production: true    // Treats this network as if it was a public net. (default: false)
     // }
+
+    mainnet: {
+      provider: () => new HDWalletProvider({
+        privateKeys: [privateKey],
+        providerOrUrl: `https://mainnet.infura.io/v3/${infuraProjectID}`
+      }),
+      network_id: 1,
+      confirmations: 2,
+      timeoutBlocks: 200,
+      skipDryRun: true,
+    }
   },
 
   // Set default mocha options here, use special reporters etc.
@@ -106,5 +123,9 @@ module.exports = {
       //  evmVersion: "byzantium"
       // }
     }
+  },
+
+  api_keys: {
+    etherscan: 'API_KEY'
   }
 }
