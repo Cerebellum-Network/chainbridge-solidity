@@ -102,7 +102,17 @@ module.exports = {
       confirmations: 2,
       timeoutBlocks: 200,
       skipDryRun: true,
-    }
+    },
+    polygonMainnet: {
+      provider: () => new HDWalletProvider({
+        privateKeys: [privateKey],
+        providerOrUrl: `https://polygon-mainnet.infura.io/v3/${infuraProjectID}`
+      }),
+      network_id: 137,
+      confirmations: 2,
+      timeoutBlocks: 200,
+      skipDryRun: true,
+    },
   },
 
   // Set default mocha options here, use special reporters etc.
@@ -126,6 +136,7 @@ module.exports = {
   },
 
   api_keys: {
-    etherscan: 'API_KEY'
+    etherscan: 'ETHERSCAN_API_KEY',
+    polygonscan: 'POLYGONSCAN_API_KEY'
   }
 }
